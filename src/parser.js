@@ -8,17 +8,22 @@ import * as ast from "./ast.js"
 
 const aelGrammar = ohm.grammar(String.raw`Ael {
   Program   = Statement+
-  Statement = let id "=" Exp                  --variable
-            | id "=" Exp                      --assign
-            | print Exp                       --print
+  Statement = let id "=" RelExp               --variable
+            | id "=" RelExp                   --assign
+            | print RelExp                    --print
+  RelExp    = Exp "==" Exp                    --binary
+            | Exp
   Exp       = Exp ("+" | "-") Term            --binary
             | Term
-  Term      = Term ("*"| "/") Factor          --binary
+  Term      = Term ("*"| "/" | "%") ExpoExp   --binary
+            | ExpoExp
+  ExpoExp   = Factor "**" ExpoExp             --expo
             | Factor
   Factor    = id
             | num
             | "(" Exp ")"                     --parens
             | ("-" | abs | sqrt) Factor       --unary
+
   num       = digit+ ("." digit+)?
   let       = "let" ~alnum
   print     = "print" ~alnum
